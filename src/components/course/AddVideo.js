@@ -89,7 +89,7 @@ const handleThumbnailChange = async (e) => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        `http://localhost:5000/api/course/${id}/video`,
+        `https://adilgazyback.onrender.com/api/course/${id}/video`,
         {
           title: formData.title,
           video_url: formData.video_url,  // URL из Cloudinary

@@ -81,7 +81,7 @@ export default function CreateCourse() {
       };
   
       // Отправляем данные как JSON
-      await axios.post('http://localhost:5000/api/course', courseData, {
+      await axios.post('https://adilgazyback.onrender.com/api/course', courseData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

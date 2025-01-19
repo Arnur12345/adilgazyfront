@@ -17,7 +17,7 @@ export default function EditCourse() {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/course/${id}`, {
+        const response = await axios.get(`https://adilgazyback.onrender.com/api/course/${id}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -44,7 +44,7 @@ export default function EditCourse() {
       }
 
       await axios.put(
-        `http://localhost:5000/api/course/${id}/edit`,
+        `https://adilgazyback.onrender.com/api/course/${id}/edit`,
         formData,
         {
           headers: {

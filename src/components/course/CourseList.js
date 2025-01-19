@@ -19,7 +19,7 @@ export default function CourseList() {
           return;
         }
 
-        const response = await axios.get('http://localhost:5000/api/courses', {
+        const response = await axios.get('https://adilgazyback.onrender.com/api/courses', {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -32,7 +32,7 @@ export default function CourseList() {
             response.data.courses.map(async (course) => {
               try {
                 const videosResponse = await axios.get(
-                  `http://localhost:5000/api/course/${course.id}/videos`,
+                  `https://adilgazyback.onrender.com/api/course/${course.id}/videos`,
                   {
                     headers: { Authorization: `Bearer ${token}` }
                   }

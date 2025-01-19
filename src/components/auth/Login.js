@@ -24,7 +24,7 @@ export default function Login() {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:5000/auth/login', formData);
+      const response = await axios.post('https://adilgazyback.onrender.com/auth/login', formData);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userRole', response.data.user_role);
       navigate('/courses');

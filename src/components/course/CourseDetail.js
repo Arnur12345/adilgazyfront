@@ -96,11 +96,11 @@ export default function CourseDetail() {
         return;
       }
 
-      await axios.delete(`http://localhost:5000/api/course/${id}/video/${videoId}`, {
+      await axios.delete(`https://adilgazyback.onrender.com/api/course/${id}/video/${videoId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      const videosResponse = await axios.get(`http://localhost:5000/api/course/${id}/videos`, {
+      const videosResponse = await axios.get(`https://adilgazyback.onrender.com/api/course/${id}/videos`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setVideos(videosResponse.data.videos || []);
@@ -122,7 +122,7 @@ export default function CourseDetail() {
         return;
       }
 
-      await axios.delete(`http://localhost:5000/api/course/${id}`, {
+      await axios.delete(`https://adilgazyback.onrender.com/api/course/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

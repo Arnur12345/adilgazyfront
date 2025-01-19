@@ -21,13 +21,13 @@ export default function GrantAccess() {
         const token = localStorage.getItem('token');
         
         // Получаем список пользователей с ролью student
-        const usersResponse = await axios.get('http://localhost:5000/api/users', {
+        const usersResponse = await axios.get('https://adilgazyback.onrender.com/api/users', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUsers(usersResponse.data.users);
 
         // Получаем список курсов
-        const coursesResponse = await axios.get('http://localhost:5000/api/courses', {
+        const coursesResponse = await axios.get('https://adilgazyback.onrender.com/api/courses', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setCourses(coursesResponse.data.courses);
@@ -57,7 +57,7 @@ export default function GrantAccess() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        'http://localhost:5000/api/course/grant-access',
+        'https://adilgazyback.onrender.com/api/course/grant-access',
         {
           user_id: parseInt(formData.userId),
           course_id: parseInt(formData.courseId),
