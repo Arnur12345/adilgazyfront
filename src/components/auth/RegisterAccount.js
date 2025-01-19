@@ -29,7 +29,7 @@ export default function RegisterAccount() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'http://localhost:5000/auth/register_account',
+        'https://adilgazyback.onrender.com/auth/register_account',
         formData,
         {
           headers: {
