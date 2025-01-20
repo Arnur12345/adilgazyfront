@@ -40,7 +40,7 @@ export default function CourseDetail() {
           setCourse(courseResponse.data.course);
       
           // Получаем видео курса
-          const videosResponse = await axios.get(`http://localhost:5000/api/course/${id}/videos`, {
+          const videosResponse = await axios.get(`https://adilgazyback.onrender.com/api/course/${id}/videos`, {
             headers: { 
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json'
