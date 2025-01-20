@@ -24,7 +24,7 @@ export default function CourseDetail() {
           console.log('Fetching course details...'); // Отладочный лог
       
           // Получаем детали курса
-          const courseResponse = await axios.get(`http://localhost:5000/api/course/${id}`, {
+          const courseResponse = await axios.get(`https://adilgazyback.onrender.com/api/course/${id}`, {
             headers: { 
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json'
