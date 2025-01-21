@@ -39,16 +39,17 @@ const CreatePdf = () => {
       // Then send PDF URL to backend
       const token = localStorage.getItem('token');
       
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('pdf', file);
+
       await axios.post(
-        `https://adilgazyback.onrender.com/course/${courseId}/pdf`,
-        {
-          title: title,
-          pdf_url: cloudinaryData.secure_url
-        },
+        `https://adilgazyback.onrender.com/api/course/${courseId}/pdf`,
+        formData,
         {
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
           }
         }
       );
