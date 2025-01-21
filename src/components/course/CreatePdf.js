@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, TextField, Paper, Typography, Box, Container } from '@mui/material';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Navbar from '../layout/Navbar';
 
 const CreatePdf = () => {
@@ -137,7 +136,9 @@ const CreatePdf = () => {
                 id="pdf-upload"
               />
               <label htmlFor="pdf-upload">
-                <CloudUploadIcon sx={{ fontSize: 48, color: '#1a237e', mb: 1 }} />
+                <div style={{ fontSize: '48px', color: '#1a237e', marginBottom: '8px' }}>
+                  📄
+                </div>
                 <Typography variant="body1" sx={{ color: '#1a237e' }}>
                   {file ? file.name : 'Нажмите для загрузки PDF файла'}
                 </Typography>
