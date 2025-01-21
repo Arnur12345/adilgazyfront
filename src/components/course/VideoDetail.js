@@ -56,7 +56,7 @@ export default function VideoDetail() {
       }
 
       const response = await axios.post(
-        `http://localhost:5000/api/course/${courseId}/video/${videoId}/comment`,
+        `https://adilgazyback.onrender.com/api/course/${courseId}/video/${videoId}/comment`,
         { text: commentText },
         {
           headers: { 

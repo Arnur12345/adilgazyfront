@@ -8,6 +8,7 @@ export default function CourseDetail() {
   const navigate = useNavigate();
   const [course, setCourse] = useState(null);
   const [videos, setVideos] = useState([]);
+  const [pdfs, setPdfs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const userRole = localStorage.getItem('userRole');
@@ -50,6 +51,18 @@ export default function CourseDetail() {
           console.log('Videos response:', videosResponse.data); // Отладочный лог
       
           setVideos(videosResponse.data.videos || []);
+
+          // Получаем PDF документы курса
+          const pdfsResponse = await axios.get(`https://adilgazyback.onrender.com/api/course/${id}/pdfs`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          console.log('PDFs response:', pdfsResponse.data); // Отладочный лог
+
+          setPdfs(pdfsResponse.data.pdfs || []);
       
         } catch (err) {
           console.error('Error details:', {
@@ -84,6 +97,10 @@ export default function CourseDetail() {
     navigate(`/course/${id}/add-video`);
   };
 
+  const handleAddPdf = () => {
+    navigate(`/course/${id}/add-pdf`);
+  };
+
   const handleDeleteVideo = async (videoId) => {
     if (!window.confirm('Вы уверены, что хотите удалить это видео?')) {
       return;
@@ -110,6 +127,32 @@ export default function CourseDetail() {
     }
   };
 
+  const handleDeletePdf = async (pdfId) => {
+    if (!window.confirm('Вы уверены, что хотите удалить этот PDF документ?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      await axios.delete(`https://adilgazyback.onrender.com/api/course/${id}/pdf/${pdfId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const pdfsResponse = await axios.get(`https://adilgazyback.onrender.com/api/course/${id}/pdfs`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPdfs(pdfsResponse.data.pdfs || []);
+    } catch (err) {
+      console.error('Error deleting PDF:', err);
+      setError('Ошибка при удалении PDF документа');
+    }
+  };
+
   const handleDeleteCourse = async () => {
     if (!window.confirm('Вы уверены, что хотите удалить этот курс?')) {
       return;
@@ -130,6 +173,36 @@ export default function CourseDetail() {
     } catch (err) {
       console.error('Error deleting course:', err);
       setError('Ошибка при удалении курса');
+    }
+  };
+
+  const handleDownloadPdf = async (pdfId, title) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      const response = await axios.get(
+        `https://adilgazyback.onrender.com/api/course/${id}/pdf/${pdfId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: 'blob'
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${title}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Error downloading PDF:', err);
+      setError('Ошибка при скачивании PDF документа');
     }
   };
 
@@ -262,6 +335,56 @@ export default function CourseDetail() {
                   Видео пока не добавлены
                 </div>
               )}
+
+              {/* PDF Documents Section */}
+              <div className="mt-12">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-semibold text-gray-900">PDF Документы</h2>
+                  {userRole === 'admin' && (
+                    <button
+                      onClick={handleAddPdf}
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700"
+                    >
+                      Добавить PDF
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {pdfs.map((pdf) => (
+                    <div
+                      key={pdf.id}
+                      className="bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 p-4"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-medium text-gray-900">{pdf.title}</h3>
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleDownloadPdf(pdf.id, pdf.title)}
+                            className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                          >
+                            Скачать
+                          </button>
+                          {userRole === 'admin' && (
+                            <button
+                              onClick={() => handleDeletePdf(pdf.id)}
+                              className="text-sm font-medium text-red-600 hover:text-red-700"
+                            >
+                              Удалить
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {pdfs.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    PDF документы пока не добавлены
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

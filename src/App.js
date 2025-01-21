@@ -9,6 +9,7 @@ import GrantAccess from './components/course/GrantAccess';
 import EditCourse from './components/course/EditCourse';
 import VideoDetail from './components/course/VideoDetail';
 import RegisterAccount from './components/auth/RegisterAccount';
+import CreatePdf from './components/course/CreatePdf';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Route path="/course/:id/edit" element={<EditCourse />} />
         <Route path="/course/:courseId/video/:videoId" element={<VideoDetail />} />
         <Route path="/register-account" element={<RegisterAccount />} />
+        <Route path="/course/:courseId/add-pdf" element={<CreatePdf />} />
       </Routes>
     </Router>
   );
