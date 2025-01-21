@@ -21,18 +21,34 @@ const CreatePdf = () => {
     }
 
     try {
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('pdf', file);
+      // Upload to Cloudinary first
+      const cloudinaryFormData = new FormData();
+      cloudinaryFormData.append('file', file);
+      cloudinaryFormData.append('upload_preset', 'adilgazy');
+      cloudinaryFormData.append('cloud_name', 'dq2pbzrtu');
 
+      const cloudinaryResponse = await fetch(
+        'https://api.cloudinary.com/v1_1/dq2pbzrtu/raw/upload',
+        {
+          method: 'POST',
+          body: cloudinaryFormData
+        }
+      );
+
+      const cloudinaryData = await cloudinaryResponse.json();
+
+      // Then send PDF URL to backend
       const token = localStorage.getItem('token');
       
       await axios.post(
         `https://adilgazyback.onrender.com/course/${courseId}/pdf`,
-        formData,
+        {
+          title: title,
+          pdf_url: cloudinaryData.secure_url
+        },
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           }
         }
