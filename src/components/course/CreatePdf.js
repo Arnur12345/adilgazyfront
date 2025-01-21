@@ -42,6 +42,7 @@ const CreatePdf = () => {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('pdf', file);
+      formData.append('order', 1); // Add default order value
 
       await axios.post(
         `https://adilgazyback.onrender.com/api/course/${courseId}/pdf`,
