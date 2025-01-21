@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, TextField, Paper, Typography, Box } from '@mui/material';
+import { Button, TextField, Paper, Typography, Box, Container } from '@mui/material';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import Navbar from '../layout/Navbar';
 
 const CreatePdf = () => {
   const [title, setTitle] = useState('');
@@ -26,7 +28,7 @@ const CreatePdf = () => {
       const token = localStorage.getItem('token');
       
       await axios.post(
-        `http://localhost:5000/course/${courseId}/pdf`,
+        `https://adilgazyback.onrender.com/course/${courseId}/pdf`,
         formData,
         {
           headers: {
@@ -54,46 +56,117 @@ const CreatePdf = () => {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h5" gutterBottom>
-          Добавить PDF документ
-        </Typography>
-
-        <form onSubmit={handleSubmit}>
-          <TextField
-            fullWidth
-            label="Название документа"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            margin="normal"
-            required
-          />
-
-          <input
-            accept="application/pdf"
-            type="file"
-            onChange={handleFileChange}
-            style={{ margin: '20px 0' }}
-          />
-
-          {error && (
-            <Typography color="error" sx={{ mt: 2 }}>
-              {error}
-            </Typography>
-          )}
-
-          <Button 
-            variant="contained" 
-            type="submit"
-            sx={{ mt: 2 }}
-            disabled={!title || !file}
+    <>
+      <Navbar />
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        <Paper 
+          elevation={3} 
+          sx={{ 
+            p: 4,
+            borderRadius: 2,
+            backgroundColor: '#ffffff',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          }}
+        >
+          <Typography 
+            variant="h4" 
+            gutterBottom 
+            sx={{
+              fontWeight: 600,
+              color: '#1a237e',
+              textAlign: 'center',
+              mb: 4
+            }}
           >
-            Загрузить PDF
-          </Button>
-        </form>
-      </Paper>
-    </Box>
+            Добавить PDF документ
+          </Typography>
+
+          <form onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              label="Название документа"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              margin="normal"
+              required
+              variant="outlined"
+              sx={{
+                mb: 3,
+                '& .MuiOutlinedInput-root': {
+                  '&:hover fieldset': {
+                    borderColor: '#1a237e',
+                  },
+                },
+              }}
+            />
+
+            <Box
+              sx={{
+                border: '2px dashed #1a237e',
+                borderRadius: 2,
+                p: 3,
+                textAlign: 'center',
+                mb: 3,
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: 'rgba(26, 35, 126, 0.04)'
+                }
+              }}
+            >
+              <input
+                accept="application/pdf"
+                type="file"
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
+                id="pdf-upload"
+              />
+              <label htmlFor="pdf-upload">
+                <CloudUploadIcon sx={{ fontSize: 48, color: '#1a237e', mb: 1 }} />
+                <Typography variant="body1" sx={{ color: '#1a237e' }}>
+                  {file ? file.name : 'Нажмите для загрузки PDF файла'}
+                </Typography>
+              </label>
+            </Box>
+
+            {error && (
+              <Typography 
+                color="error" 
+                sx={{ 
+                  mt: 2, 
+                  mb: 2,
+                  textAlign: 'center',
+                  backgroundColor: '#ffebee',
+                  p: 2,
+                  borderRadius: 1
+                }}
+              >
+                {error}
+              </Typography>
+            )}
+
+            <Button 
+              variant="contained" 
+              type="submit"
+              fullWidth
+              disabled={!title || !file}
+              sx={{
+                mt: 2,
+                py: 1.5,
+                backgroundColor: '#1a237e',
+                '&:hover': {
+                  backgroundColor: '#000051'
+                },
+                '&:disabled': {
+                  backgroundColor: '#9fa8da'
+                }
+              }}
+            >
+              Загрузить PDF
+            </Button>
+          </form>
+        </Paper>
+      </Container>
+    </>
   );
 };
 

@@ -173,6 +173,21 @@ export default function CourseDetail() {
     } catch (err) {
       console.error('Error deleting course:', err);
       setError('Ошибка при удалении курса');
+      // Добавляем более подробную информацию об ошибке
+      if (err.response) {
+        // Ошибка от сервера
+        console.log('Server Error:', err.response.data);
+        console.log('Status:', err.response.status);
+        setError(`Ошибка при удалении курса: ${err.response.data.message || err.response.statusText}`);
+      } else if (err.request) {
+        // Ошибка сети
+        console.log('Network Error:', err.request);
+        setError('Ошибка сети при удалении курса. Проверьте подключение к интернету.');
+      } else {
+        // Другие ошибки
+        console.log('Error:', err.message);
+        setError(`Неизвестная ошибка: ${err.message}`);
+      }
     }
   };
 
