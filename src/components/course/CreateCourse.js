@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../layout/Navbar';
+import config from './config';
 
 export default function CreateCourse() {
     
@@ -38,11 +39,11 @@ export default function CreateCourse() {
         // Загружаем файл в Cloudinary
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('upload_preset', 'adilgazy');
-        formData.append('cloud_name', 'dq2pbzrtu');
+        formData.append('upload_preset', config.cloudinaryPreset);
+        formData.append('cloud_name', config.cloudinaryCloudName);
         
         const response = await fetch(
-          'https://api.cloudinary.com/v1_1/dq2pbzrtu/image/upload',
+          config.cloudinaryUrl,
           {
             method: 'POST',
             body: formData
@@ -81,7 +82,7 @@ export default function CreateCourse() {
       };
   
       // Отправляем данные как JSON
-      await axios.post('https://adilgazyback.onrender.com/api/course', courseData, {
+      await axios.post(`${config.apiUrl}/api/course`, courseData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

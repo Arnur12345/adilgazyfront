@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../layout/Navbar';
+import config from './config';
 
 export default function GrantAccess() {
   const navigate = useNavigate();
@@ -21,13 +22,13 @@ export default function GrantAccess() {
         const token = localStorage.getItem('token');
         
         // Получаем список пользователей с ролью student
-        const usersResponse = await axios.get('https://adilgazyback.onrender.com/api/users', {
+        const usersResponse = await axios.get(`${config.apiUrl}/api/users`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUsers(usersResponse.data.users);
 
         // Получаем список курсов
-        const coursesResponse = await axios.get('https://adilgazyback.onrender.com/api/courses', {
+        const coursesResponse = await axios.get(`${config.apiUrl}/api/courses`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setCourses(coursesResponse.data.courses);
@@ -57,7 +58,7 @@ export default function GrantAccess() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        'https://adilgazyback.onrender.com/api/course/grant-access',
+        `${config.apiUrl}/api/course/grant-access`,
         {
           user_id: parseInt(formData.userId),
           course_id: parseInt(formData.courseId),

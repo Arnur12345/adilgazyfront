@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../layout/Navbar';
+import config from './config';
 
 export default function EditCourse() {
   const { id } = useParams();
@@ -17,7 +18,7 @@ export default function EditCourse() {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const response = await axios.get(`https://adilgazyback.onrender.com/api/course/${id}`, {
+        const response = await axios.get(`${config.apiUrl}/api/course/${id}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -44,7 +45,7 @@ export default function EditCourse() {
       }
 
       await axios.put(
-        `https://adilgazyback.onrender.com/api/course/${id}/edit`,
+        `${config.apiUrl}/api/course/${id}/edit`,
         formData,
         {
           headers: {

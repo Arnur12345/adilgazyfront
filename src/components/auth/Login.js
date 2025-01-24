@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import config from '../course/config';
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -24,7 +25,7 @@ export default function Login() {
     setError('');
 
     try {
-      const response = await axios.post('https://adilgazyback.onrender.com/auth/login', formData);
+      const response = await axios.post(`${config.apiUrl}/auth/login`, formData);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userRole', response.data.user_role);
       navigate('/courses');

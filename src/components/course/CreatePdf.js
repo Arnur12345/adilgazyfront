@@ -3,11 +3,13 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, TextField, Paper, Typography, Box, Container } from '@mui/material';
 import Navbar from '../layout/Navbar';
+import config from './config';
 
 const CreatePdf = () => {
   const [title, setTitle] = useState('');
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { courseId } = useParams();
   const navigate = useNavigate();
 
@@ -20,44 +22,49 @@ const CreatePdf = () => {
     }
 
     try {
+      setLoading(true);
       // Upload to Cloudinary first
       const cloudinaryFormData = new FormData();
       cloudinaryFormData.append('file', file);
-      cloudinaryFormData.append('upload_preset', 'adilgazy');
-      cloudinaryFormData.append('cloud_name', 'dq2pbzrtu');
-
-      const cloudinaryResponse = await fetch(
-        'https://api.cloudinary.com/v1_1/dq2pbzrtu/raw/upload',
-        {
-          method: 'POST',
-          body: cloudinaryFormData
-        }
+      cloudinaryFormData.append('upload_preset', config.cloudinaryPreset);
+      cloudinaryFormData.append('cloud_name', config.cloudinaryCloudName);
+      
+      const cloudinaryResponse = await axios.post(
+        config.cloudinaryUrl,
+        cloudinaryFormData
       );
 
-      const cloudinaryData = await cloudinaryResponse.json();
+      if (!cloudinaryResponse.data.secure_url) {
+        throw new Error('Не получен URL от Cloudinary');
+      }
 
       // Then send PDF URL to backend
       const token = localStorage.getItem('token');
       
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('pdf', file);
-      formData.append('order', 1); // Add default order value
-
-      await axios.post(
-        `https://adilgazyback.onrender.com/api/course/${courseId}/pdf`,
-        formData,
+      const response = await axios.post(
+        `${config.apiUrl}/api/course/${courseId}/pdf`,
+        {
+          title: title,
+          pdf_url: cloudinaryResponse.data.secure_url
+        },
         {
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'application/json'
           }
         }
       );
 
+      if (!response.data) {
+        throw new Error('Нет ответа от сервера');
+      }
+
       navigate(`/course/${courseId}`);
     } catch (err) {
-      setError(err.response?.data?.error || 'Произошла ошибка при загрузке PDF');
+      console.error('Error uploading PDF:', err);
+      setError(err.response?.data?.error || err.message || 'Произошла ошибка при загрузке PDF');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -167,7 +174,7 @@ const CreatePdf = () => {
               variant="contained" 
               type="submit"
               fullWidth
-              disabled={!title || !file}
+              disabled={loading || !title || !file}
               sx={{
                 mt: 2,
                 py: 1.5,
@@ -180,7 +187,7 @@ const CreatePdf = () => {
                 }
               }}
             >
-              Загрузить PDF
+              {loading ? 'Загрузка...' : 'Загрузить PDF'}
             </Button>
           </form>
         </Paper>

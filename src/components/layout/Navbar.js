@@ -6,12 +6,14 @@ import { MenuIcon, XIcon } from '@heroicons/react/outline';
 export default function Navbar() {
   const navigate = useNavigate();
   const userRole = localStorage.getItem('userRole');
+  const currentPath = window.location.pathname;
 
   const navigation = [
-    { name: 'Courses', href: '/courses', current: true },
+    { name: 'Courses', href: '/courses', current: currentPath === '/courses' },
     ...(userRole === 'admin' ? [
-      { name: 'Grant Access', href: '/grant-access', current: false },
-      { name: 'Register Account', href: '/register-account', current: false }
+      { name: 'Grant Access', href: '/grant-access', current: currentPath === '/grant-access' },
+      { name: 'Register Account', href: '/register-account', current: currentPath === '/register-account' },
+      { name: 'Users', href: '/users', current: currentPath === '/users' }
     ] : []),
   ];
 

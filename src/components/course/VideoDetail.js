@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../layout/Navbar';
+import config from './config';
 
 export default function VideoDetail() {
   const [video, setVideo] = useState(null);
@@ -21,7 +22,7 @@ export default function VideoDetail() {
         }
 
         const response = await axios.get(
-          `https://adilgazyback.onrender.com/api/course/${courseId}/video/${videoId}`,
+          `${config.apiUrl}/api/course/${courseId}/video/${videoId}`,
           {
             headers: { Authorization: `Bearer ${token}` }
           }

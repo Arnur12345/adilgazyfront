@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../layout/Navbar';
+import config from './config';
 
 export default function CourseDetail() {
   const { id } = useParams();
@@ -22,17 +23,16 @@ export default function CourseDetail() {
             return;
           }
       
-          console.log('Fetching course details...'); // Отладочный лог
+          console.log('Fetching course details...');
       
-          // Получаем детали курса
-          const courseResponse = await axios.get(`https://adilgazyback.onrender.com/api/course/${id}`, {
+          const courseResponse = await axios.get(`${config.apiUrl}/api/course/${id}`, {
             headers: { 
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json'
             }
           });
       
-          console.log('Course response:', courseResponse.data); // Отладочный лог
+          console.log('Course response:', courseResponse.data);
       
           if (!courseResponse.data.course) {
             throw new Error('Курс не найден');
@@ -40,27 +40,25 @@ export default function CourseDetail() {
       
           setCourse(courseResponse.data.course);
       
-          // Получаем видео курса
-          const videosResponse = await axios.get(`https://adilgazyback.onrender.com/api/course/${id}/videos`, {
+          const videosResponse = await axios.get(`${config.apiUrl}/api/course/${id}/videos`, {
             headers: { 
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json'
             }
           });
       
-          console.log('Videos response:', videosResponse.data); // Отладочный лог
+          console.log('Videos response:', videosResponse.data);
       
           setVideos(videosResponse.data.videos || []);
 
-          // Получаем PDF документы курса
-          const pdfsResponse = await axios.get(`https://adilgazyback.onrender.com/api/course/${id}/pdfs`, {
+          const pdfsResponse = await axios.get(`${config.apiUrl}/api/course/${id}/pdfs`, {
             headers: {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json'
             }
           });
 
-          console.log('PDFs response:', pdfsResponse.data); // Отладочный лог
+          console.log('PDFs response:', pdfsResponse.data);
 
           setPdfs(pdfsResponse.data.pdfs || []);
       
@@ -113,11 +111,11 @@ export default function CourseDetail() {
         return;
       }
 
-      await axios.delete(`https://adilgazyback.onrender.com/api/course/${id}/video/${videoId}`, {
+      await axios.delete(`${config.apiUrl}/api/course/${id}/video/${videoId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      const videosResponse = await axios.get(`https://adilgazyback.onrender.com/api/course/${id}/videos`, {
+      const videosResponse = await axios.get(`${config.apiUrl}/api/course/${id}/videos`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setVideos(videosResponse.data.videos || []);
@@ -139,11 +137,11 @@ export default function CourseDetail() {
         return;
       }
 
-      await axios.delete(`https://adilgazyback.onrender.com/api/course/${id}/pdf/${pdfId}`, {
+      await axios.delete(`${config.apiUrl}/api/course/${id}/pdf/${pdfId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      const pdfsResponse = await axios.get(`https://adilgazyback.onrender.com/api/course/${id}/pdfs`, {
+      const pdfsResponse = await axios.get(`${config.apiUrl}/api/course/${id}/pdfs`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPdfs(pdfsResponse.data.pdfs || []);
@@ -165,7 +163,7 @@ export default function CourseDetail() {
         return;
       }
 
-      await axios.delete(`https://adilgazyback.onrender.com/api/course/${id}`, {
+      await axios.delete(`${config.apiUrl}/api/course/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -173,24 +171,19 @@ export default function CourseDetail() {
     } catch (err) {
       console.error('Error deleting course:', err);
       setError('Ошибка при удалении курса');
-      // Добавляем более подробную информацию об ошибке
       if (err.response) {
-        // Ошибка от сервера
         console.log('Server Error:', err.response.data);
         console.log('Status:', err.response.status);
         setError(`Ошибка при удалении курса: ${err.response.data.message || err.response.statusText}`);
       } else if (err.request) {
-        // Ошибка сети
         console.log('Network Error:', err.request);
         setError('Ошибка сети при удалении курса. Проверьте подключение к интернету.');
       } else {
-        // Другие ошибки
         console.log('Error:', err.message);
         setError(`Неизвестная ошибка: ${err.message}`);
       }
     }
   };
-
   const handleDownloadPdf = async (pdfId, title) => {
     try {
       const token = localStorage.getItem('token');
@@ -199,15 +192,19 @@ export default function CourseDetail() {
         return;
       }
 
-      const response = await axios.get(
-        `https://adilgazyback.onrender.com/api/course/${id}/pdf/${pdfId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          responseType: 'blob'
-        }
-      );
+      const response = await axios({
+        method: 'GET',
+        url: `${config.apiUrl}/api/course/${id}/pdf/${pdfId}`,
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/pdf'
+        },
+        responseType: 'blob'
+      });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      // Create blob URL and trigger download
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `${title}.pdf`);
@@ -215,9 +212,16 @@ export default function CourseDetail() {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
+
     } catch (err) {
       console.error('Error downloading PDF:', err);
-      setError('Ошибка при скачивании PDF документа');
+      if (err.response?.status === 403) {
+        setError('У вас нет доступа к этому PDF документу');
+      } else if (err.response?.status === 404) {
+        setError('PDF документ не найден'); 
+      } else {
+        setError('Ошибка при скачивании PDF документа');
+      }
     }
   };
 

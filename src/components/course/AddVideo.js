@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../layout/Navbar';
+import config from './config';
 
 export default function AddVideo() {
   const { id } = useParams();
@@ -32,11 +33,11 @@ export default function AddVideo() {
         // Загружаем видео в Cloudinary
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('upload_preset', 'adilgazy');
+        formData.append('upload_preset', config.cloudinaryPreset);
         formData.append('resource_type', 'video');
         
         const response = await axios.post(
-          'https://api.cloudinary.com/v1_1/dq2pbzrtu/video/upload',
+          config.cloudinaryUrl.replace('image', 'video'),
           formData
         );
 
@@ -61,10 +62,10 @@ const handleThumbnailChange = async (e) => {
         // Загружаем thumbnail в Cloudinary
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('upload_preset', 'adilgazy');
+        formData.append('upload_preset', config.cloudinaryPreset);
         
         const response = await axios.post(
-          'https://api.cloudinary.com/v1_1/dq2pbzrtu/image/upload',
+          config.cloudinaryUrl,
           formData
         );
 
@@ -89,7 +90,7 @@ const handleThumbnailChange = async (e) => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        `https://adilgazyback.onrender.com/api/course/${id}/video`,
+        `${config.apiUrl}/course/${id}/video`,
         {
           title: formData.title,
           video_url: formData.video_url,  // URL из Cloudinary
