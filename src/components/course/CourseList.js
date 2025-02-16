@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../layout/Navbar';
+import config from './config';
 
 export default function CourseList() {
   const [courses, setCourses] = useState([]);
@@ -19,7 +20,7 @@ export default function CourseList() {
           return;
         }
 
-        const response = await axios.get('https://adilgazyback.onrender.com/api/courses', {
+        const response = await axios.get(`${config.apiUrl}/api/courses`, {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -32,7 +33,7 @@ export default function CourseList() {
             response.data.courses.map(async (course) => {
               try {
                 const videosResponse = await axios.get(
-                  `https://adilgazyback.onrender.com/api/course/${course.id}/videos`,
+                  `${config.apiUrl}/api/course/${course.id}/videos`,
                   {
                     headers: { Authorization: `Bearer ${token}` }
                   }

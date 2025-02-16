@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../layout/Navbar';
+import config from '../course/config';
 
 export default function RegisterAccount() {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ export default function RegisterAccount() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'https://adilgazyback.onrender.com/auth/register_account',
+        `${config.apiUrl}/auth/register_account`,
         formData,
         {
           headers: {
